@@ -1,0 +1,67 @@
+@AppRule(message="DULPICATE BUSINESS ENTITY MEMBER NAME")
+public OperationResponse validateIsBizNtyMembrName()throws SQLException{
+    int count;
+    cvoDBManager.addContextParam("rviMembrD",cviMembrD);
+    cvoDBManager.addContextParam("rviBizNtyD",cviBizNtyD);
+    cvoDBManager.addContextParam("rvsMembrType",cvsMembrType);
+    cvoDBManager.addContextParam("rvsMembrStsDesc",cvsMembrStsDesc);
+    cvoDBManager.addContextParam("rviBizNtyMembrD", cviBizNtyMembrD);
+    ResultSet lvoBizNtyMembr = cvoDBManager.selectResultSet("BizNty\\sarCountBizNtyMembrD");
+    lvoBizNtyMembr.next();
+    count = lvoBizNtyMembr.getInt("sviCountMembrD");
+    if(count>1)
+    {
+      cvoDBManager.addContextParam("rviMembrD",cviMembrD);
+      cvoDBManager.addContextParam("rviBizNtyD",cviBizNtyD);
+      cvoDBManager.addContextParam("rvsMembrType",cvsMembrType);
+      cvoDBManager.addContextParam("rvsMembrStsDesc",cvsMembrStsDesc);
+      ResultSet lvoBizNtyMembrMoreThanOne = cvoDBManager.selectResultSet("BizNty\\sarBizNtyMembrOne");
+      lvoBizNtyMembrMoreThanOne.next();
+      LocalDate localDate = lvoBizNtyMembrMoreThanOne.getDate("svdEfctvDateTo").toLocalDate(); 
+      LocalDate targetDate = LocalDate.parse("2078-12-31");
+      if (localDate.isEqual(targetDate))
+       {
+        return new OperationResponse(false, "You are already a active Member");
+       }
+       else 
+       {
+           if(cvdEfctvDateFrom.isAfter(localDate))
+           {
+              return new OperationResponse(true, "");
+           }
+           else 
+           {
+                return new OperationResponse(false,": Member active from should be after " + localDate);
+           }
+       }
+
+    }
+    if(count == 1)
+    {
+       cvoDBManager.addContextParam("rviMembrD",cviMembrD);
+       cvoDBManager.addContextParam("rviBizNtyD",cviBizNtyD);
+       cvoDBManager.addContextParam("rvsMembrType",cvsMembrType);
+       cvoDBManager.addContextParam("rvsMembrStsDesc",cvsMembrStsDesc);
+       ResultSet lvoBizNtyMembrTo = cvoDBManager.selectResultSet("BizNty\\sarBizNtyMembrTo");
+       lvoBizNtyMembrTo.next();
+       LocalDate localDate = lvoBizNtyMembrTo.getDate("svdEfctvDateTo").toLocalDate(); 
+       LocalDate targetDate = LocalDate.parse("2078-12-31");
+       if (localDate.isEqual(targetDate))
+       {
+        return new OperationResponse(false, "You are already a active Member");
+       }
+       else 
+       {
+           if(cvdEfctvDateFrom.isAfter(localDate))
+           {
+                return new OperationResponse(true, "");
+           }
+           else 
+           {
+               return new OperationResponse(false,": Member active from should be after " + localDate);
+           }
+       }
+    }
+    return new OperationResponse(true,"");
+}
+  
